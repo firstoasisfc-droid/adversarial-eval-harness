@@ -1,0 +1,21 @@
+# Research corpora contain normalized jailbreak framing: never commit.
+# Only the placeholder sample is public.
+corpus*.json
+!corpus.sample.json
+build_full_corpus.py
+
+# Run outputs (may contain response excerpts)
+eval_out/
+*-results/
+*.jsonl
+run_meta.json
+
+# Local / secrets
+.env
+*.key
+proposal.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
