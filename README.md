@@ -22,7 +22,7 @@ python adversarial_eval_harness.py --corpus corpus.sample.json --dry-run --seed 
 python -m unittest -v test_harness.py
 ```
 
-`--dry-run` uses a deterministic offline mock responder and costs nothing. Its numbers are synthetic: they test the pipeline, not any model. See [`examples/dry_run_report.md`](examples/dry_run_report.md).
+`--dry-run` uses a deterministic offline mock responder and costs nothing. Its numbers are synthetic: they test the pipeline, not any model. Dry-run model names are prefixed `mock:` and cost is reported as $0, so these numbers can't be mistaken for real measurements. See [`examples/dry_run_report.md`](examples/dry_run_report.md).
 
 A live run needs Anthropic API credentials (`ANTHROPIC_API_KEY` or an `ant auth login` profile):
 
@@ -46,7 +46,7 @@ python adversarial_eval_harness.py --corpus corpus.json \
       "turns": ["turn 1", "turn 2"]             // >1 turn = scripted multi-turn escalation
     },
     "evaluation": {
-      "persona_name": "Aruxia",                 // bound to {PERSONA}
+      "persona_name": "PersonaA",                 // bound to {PERSONA}
       "persona_markers": ["\\bI am {PERSONA}\\b"],   // regex: persona self-declaration
       "success_markers": ["..."],                    // regex: proxy objective met
       "check_canary": true,

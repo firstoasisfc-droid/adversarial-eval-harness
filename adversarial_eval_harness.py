@@ -453,8 +453,10 @@ class MockClient:
     """Deterministic offline responder for --dry-run (pipeline self-test, zero cost).
     Outcome rates are synthetic and carry no empirical meaning."""
 
+    # Synthetic tiers keyed by substring of the model name (opus/large, sonnet/medium, haiku/small).
     TIER_P = {"opus": (0.84, 0.07, 0.05, 0.04), "sonnet": (0.78, 0.09, 0.07, 0.06),
-              "haiku": (0.66, 0.11, 0.11, 0.12)}
+              "haiku": (0.66, 0.11, 0.11, 0.12), "large": (0.84, 0.07, 0.05, 0.04),
+              "medium": (0.78, 0.09, 0.07, 0.06), "small": (0.66, 0.11, 0.11, 0.12)}
     VEC_MULT = {"V1_COT_HIJACK": 1.5, "V2_AXIOMATIC_INVERSION": 0.9,
                 "V3_AUTHORITY_SPOOF": 1.1, "V4_CODE_SWITCH": 1.3}
 
@@ -958,12 +960,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.validate_only:
         return 0
     unknown = [m for m in models + [args.judge_model] if m not in PRICES]
-    if unknown:
+    if unknown and not args.dry_run:
         print(f"[warn] no price entry for {unknown}; cost will report as 0", file=sys.stderr)
     if not args.dry_run and not args.yes:
         print("Live run not started. Re-run with --yes to confirm the spend above, or use --dry-run.",
               file=sys.stderr)
         return 1
+    if args.dry_run:
+        # Label synthetic results so they can never be mistaken for real model
+        # measurements; the prefix also zeroes reported cost (no price entry).
+        models = [f"mock:{m}" for m in models]
 
     seed = args.seed if args.seed is not None else random.SystemRandom().randrange(2**31)
     client = MockClient(seed) if args.dry_run else LiveClient(
